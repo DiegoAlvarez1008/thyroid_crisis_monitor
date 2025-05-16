@@ -15,8 +15,7 @@ class HomeScreen(Screen):
         btn_login = Button(text="Iniciar sesión", size_hint=(1, 0.2))
         btn_salir = Button(text="Salir de la aplicación", size_hint=(1, 0.2), on_press=self.salir_app)
 
-        # Aquí conectaremos luego a pantallas de login y registro
-        btn_registro.bind(on_press=self.no_implementado)
+        btn_registro.bind(on_press=self.ir_a_registro)
         btn_login.bind(on_press=self.ir_a_monitor)
 
         layout.add_widget(label)
@@ -34,3 +33,7 @@ class HomeScreen(Screen):
 
     def no_implementado(self, instance):
         print("Funcionalidad de registro aún no implementada.")
+
+    def ir_a_registro(self, instance):
+        self.manager.current = "register"
+

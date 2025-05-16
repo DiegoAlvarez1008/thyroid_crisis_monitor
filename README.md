@@ -17,3 +17,7 @@ Este proyecto es un prototipo funcional para detectar signos tempranos de crisis
 
 - Python 3.10+
 - Kivy (`pip install kivy`)
+
+## Próximamente:
+
+Se migrará a Flutter (Dart) tras la optimización en Kivy

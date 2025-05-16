@@ -8,11 +8,9 @@ class TestCognitiveScreen(Screen):
     def __init__(self, **kwargs):
         super(TestCognitiveScreen, self).__init__(**kwargs)
         self.layout = BoxLayout(orientation='vertical', spacing=10, padding=20)
-
         self.label_instruccion = Label(text="Responde lo más rápido posible:\n¿5 + 3 = ?", font_size=20)
         self.boton_correcto = Button(text="8", on_press=self.evaluar_respuesta)
         self.boton_incorrecto = Button(text="9", on_press=self.evaluar_respuesta)
-
         self.label_resultado = Label(text="", font_size=18)
 
         self.layout.add_widget(self.label_instruccion)
@@ -30,8 +28,8 @@ class TestCognitiveScreen(Screen):
 
     def evaluar_respuesta(self, instance):
         tiempo = time.time() - self.inicio
-        correcta = instance.text == "8"
-        puntaje_test = 10 if tiempo < 3 and correcta else 5 if correcta else 0
+        correcta1 = instance.text == "8"
+        puntaje_test = 0 if tiempo < 3 and correcta1 else 5 if correcta1 else 10
 
         total = puntaje_test
         if self.temp >= 38.5:
@@ -39,4 +37,5 @@ class TestCognitiveScreen(Screen):
         if self.fc >= 100:
             total += 10
 
-        self.label_resultado.text = f"Test: {'Correcto' if correcta else 'Incorrecto'} en {tiempo:.1f}s\nPuntaje total: {total}"
+        self.label_resultado.text = f"Test: {'Correcto' if correcta1 else 'Incorrecto'} en {tiempo:.1f}s\nPuntaje total: {total}"
+        #AGREGAR COMENTARIO PARA VALIDAR EN EL GITHUB
