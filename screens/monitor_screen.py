@@ -3,7 +3,13 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 import random
-from utils.thresholds import evaluar_parametros
+from utils.puntajes import evaluar_estado
+#from utils.puntajes import calcular_puntaje_temp
+#from utils.puntajes import calcular_puntaje_fc
+#from utils.puntajes import calcular_puntaje_test
+# IMPORTANTE SABER: 
+#Estos 3 métodos no son necesarios porque se llaman desde el método calcular_puntaje_total en el archivo de 'utils/puntajes.py'
+from utils.puntajes import calcular_puntaje_total
 
 class MonitorScreen(Screen):
     def __init__(self, **kwargs):
@@ -26,31 +32,54 @@ class MonitorScreen(Screen):
         self.add_widget(self.layout)
 
     def realizar_medicion(self, instance):
-        # Simular sensores
-        temp = round(random.uniform(36.5, 41.0), 1)
-        fc = random.randint(70, 140)
+        # Vamos a simular la obtención de los valores de temperatura y frecuencia cardíaca porque por ahora no cuenton sensores ni con ESP32
+        i = 0
+        counter = 0
+        while (i < 3): # Se comienza iterando porque se simula que se toman 3 mediciones para evaluar el estado del paciente
+            i += 1
+            temp = round(random.uniform(36.5, 41.0), 1)
+            fc = random.randint(70, 140)
 
-        self.label_temp.text = f"Temperatura: {temp} °C"
-        self.label_fc.text = f"Frecuencia cardíaca: {fc} bpm"
+            #La verdadera obtención de los valores de puntuaciones de temperatura son:
+            #temp = llamamos al método que recibirá dichos valores a través de la comunicación BLE con el ESP32
+            # fc = llamamos al método que recibirá dichos valores a través de la comunicación BLE con el ESP32 
+            self.label_temp.text = f"Temperatura: {temp} °C"
+            self.label_fc.text = f"Frecuencia cardíaca: {fc} bpm"
+            puntuacion = calcular_puntaje_total(temp, fc, 0, True)  # Simulamos un test con respuesta correcta: True y tiempo de respuesta: 0 segundos
+            estado = evaluar_estado(puntuacion)
 
-        estado = evaluar_parametros(temp, fc)
+            if estado == "critico":
+                counter += 1
+                
+            elif estado == "preocupante":
+                self.label_estado.text = "Estado: PREOCUPANTE"
+                self.label_estado.color = (1, 0.5, 0, 1)  # Naranja
+                self.boton_test.disabled = False
+                # Comenzamos con el test cognitivo porque sabemos que el estado es preocupante y no crítico
+                # Acá iría código que deriva al test cognitivo, por ejemplo, habilitando un botón o cambiando de pantalla
+                # Y luego también pondríamos una línea de código que suma el puntaje del test cognitivo al total de puntuaciones
+                # Finalmente si está en CRÍTICO no tenemos que hacer validez alguna porque el test cognitivo es lo más preciso
+                # Pasa al protocolo CRÍTICO
 
-        if estado == "critico":
-            self.label_estado.text = "Estado: CRÍTICO ⚠️"
-            self.label_estado.color = (1, 0, 0, 1)  # Rojo
-            self.boton_test.disabled = True
-        elif estado == "preocupante":
-            self.label_estado.text = "Estado: PREOCUPANTE"
-            self.label_estado.color = (1, 0.5, 0, 1)  # Naranja
-            self.boton_test.disabled = False
-        else:
-            self.label_estado.text = "Estado: Estable"
-            self.label_estado.color = (0, 1, 0, 1)  # Verde
-            self.boton_test.disabled = True
+            else:
+                self.label_estado.text = "Estado: Estable"
+                self.label_estado.color = (0, 1, 0, 1)  # Verde
+                self.boton_test.disabled = True
+            
+            if counter >= 3:
+                self.label_estado.text = "Estado: CRÍTICO ⚠️"
+                self.label_estado.color = (1, 0, 0, 1)  # Rojo
+                self.boton_test.disabled = True
+                # PASA AL PROTOCOLO CRÍTICO
+            else:
+                break
 
-        # Guardar datos simulados por si luego se usan
-        self.temp_actual = temp
-        self.fc_actual = fc
+            # Guardar datos simulados por si luego se usan (un pequeño back-up) . Recordar que la alerta se emitirá si el promedio de las 3 últimas
+            # mediciones de puntuaciones dan como resultado estado crítico. porque sabemos que puede haber un falso positivo y tampoco requerimos
+            # de muchas mediciones más.
+
+            self.temp_actual = temp
+            self.fc_actual = fc
 
     def ir_a_test(self, instance):
         # Guardar valores para pasarlos al test cognitivo

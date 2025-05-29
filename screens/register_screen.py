@@ -3,6 +3,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from utils.storage import registrar_usuario
 import json
 import os
 
@@ -49,26 +50,15 @@ class RegisterScreen(Screen):
             "emergencia": emergency
         }
 
-        ruta = "database/user_data.json"
-        if os.path.exists(ruta):
-            with open(ruta, "r") as f:
-                datos = json.load(f)
-        else:
-            datos = {}
+        exito, mensaje = registrar_usuario(username, password, phone, emergency)
+        self.msg_label.text = mensaje
+        if exito:
+            self.username_input.text = ""
+            self.password_input.text = ""
+            self.phone_input.text = ""
+            self.emergency_input.text = ""
 
-        if username in datos:
-            self.msg_label.text = "Usuario ya registrado."
-            return
-
-        datos[username] = user_data
-        with open(ruta, "w") as f:
-            json.dump(datos, f, indent=4)
-
-        self.msg_label.text = "Registro exitoso. Puedes iniciar sesión."
-        self.username_input.text = ""
-        self.password_input.text = ""
-        self.phone_input.text = ""
-        self.emergency_input.text = ""
+        
 
     def volver_inicio(self, instance):
         self.manager.current = "home"
