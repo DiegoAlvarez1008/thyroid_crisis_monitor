@@ -17,6 +17,8 @@ Este proyecto es un prototipo funcional para detectar signos tempranos de crisis
 
 - Python 3.10+
 - Kivy (`pip install kivy`)
+- Pyjnius
+- La lectura de los parámetros se llevará a cabo en Arduino IDE, pues trabajaremos con un ESP32 (hay compatibilidad)
 
 ## Próximamente:
 
