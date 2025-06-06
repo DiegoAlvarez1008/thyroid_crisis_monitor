@@ -3,13 +3,12 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 import random
-from utils.puntajes import evaluar_estado
+from utils.puntajes import calcular_puntaje_total, evaluar_estado
 #from utils.puntajes import calcular_puntaje_temp
 #from utils.puntajes import calcular_puntaje_fc
 #from utils.puntajes import calcular_puntaje_test
 # IMPORTANTE SABER: 
 #Estos 3 métodos no son necesarios porque se llaman desde el método calcular_puntaje_total en el archivo de 'utils/puntajes.py'
-from utils.puntajes import calcular_puntaje_total
 
 class MonitorScreen(Screen):
     def __init__(self, **kwargs):
@@ -54,7 +53,11 @@ class MonitorScreen(Screen):
             elif estado == "preocupante":
                 self.label_estado.text = "Estado: PREOCUPANTE"
                 self.label_estado.color = (1, 0.5, 0, 1)  # Naranja
-                self.boton_test.disabled = False
+                self.temp_actual = temp
+                self.fc_actual = fc
+                self.ir_a_test(None)
+                return
+                
                 # Comenzamos con el test cognitivo porque sabemos que el estado es preocupante y no crítico
                 # Acá iría código que deriva al test cognitivo, por ejemplo, habilitando un botón o cambiando de pantalla
                 # Y luego también pondríamos una línea de código que suma el puntaje del test cognitivo al total de puntuaciones
@@ -65,23 +68,17 @@ class MonitorScreen(Screen):
                 self.label_estado.text = "Estado: Estable"
                 self.label_estado.color = (0, 1, 0, 1)  # Verde
                 self.boton_test.disabled = True
+                break
             
             if counter >= 3:
                 self.label_estado.text = "Estado: CRÍTICO ⚠️"
                 self.label_estado.color = (1, 0, 0, 1)  # Rojo
                 self.boton_test.disabled = True
                 # PASA AL PROTOCOLO CRÍTICO
-            else:
-                break
-
-            # Guardar datos simulados por si luego se usan (un pequeño back-up) . Recordar que la alerta se emitirá si el promedio de las 3 últimas
-            # mediciones de puntuaciones dan como resultado estado crítico. porque sabemos que puede haber un falso positivo y tampoco requerimos
-            # de muchas mediciones más.
-
-            self.temp_actual = temp
-            self.fc_actual = fc
+                
+        self.temp_actual = temp
+        self.fc_actual = fc        
 
     def ir_a_test(self, instance):
-        # Guardar valores para pasarlos al test cognitivo
         self.manager.get_screen("test").set_datos_previos(self.temp_actual, self.fc_actual)
         self.manager.current = "test"
