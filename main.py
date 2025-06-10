@@ -17,3 +17,4 @@ class ThyroidApp(App):
 if __name__ == "__main__":
     ThyroidApp().run()
 
+    
