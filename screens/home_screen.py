@@ -16,7 +16,7 @@ class HomeScreen(Screen):
         btn_salir = Button(text="Salir de la aplicación", size_hint=(1, 0.2), on_press=self.salir_app)
 
         btn_registro.bind(on_press=self.ir_a_registro)
-        btn_login.bind(on_press=self.ir_a_monitor)
+        btn_login.bind(on_press=self.ir_a_login)
 
         layout.add_widget(label)
         layout.add_widget(btn_registro)
@@ -36,4 +36,8 @@ class HomeScreen(Screen):
 
     def ir_a_registro(self, instance):
         self.manager.current = "register"
+
+    def ir_a_login(self, instance):
+        self.manager.current = "login"
+
 
